@@ -1,5 +1,9 @@
 # WorkingStudent_ChairOfFinanceUniDUE
 
+## ToDO
+* [ ] SSRN Scraper: Search in the single respective Conference Sub-SSRN Pages for more details like Submission format (i.e. LaTex, Word, PDF, etc) and also for the explicit Submission Deadline
+* [ ] SSRN Scraper: Check Automation Process and write it as VBA-Standalone Code 
+
 ## Useful Links
 ### Reuters Eikon Python API
 * https://developers.refinitiv.com/en/article-catalog/article/eikon-data-api-cheat-sheet
