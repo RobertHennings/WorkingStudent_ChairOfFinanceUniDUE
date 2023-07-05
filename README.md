@@ -1,5 +1,15 @@
 # WorkingStudent_ChairOfFinanceUniDUE
 
+<p align="center">
+  <img src="https://github.com/RobertHennings/WorkingStudent_ChairOfFinanceUniDUE/blob/main/Pictures/HEMF_Logo.png" 
+       width="400"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/RobertHennings/WorkingStudent_ChairOfFinanceUniDUE/blob/main/Pictures/Chair_Logo.png" 
+       width="400"/>
+</p>
+
 ## ToDO
 * [ ] SSRN Scraper: Search in the single respective Conference Sub-SSRN Pages for more details like Submission format (i.e. LaTex, Word, PDF, etc) and also for the explicit Submission Deadline
 * [ ] SSRN Scraper: Check Automation Process and write it as VBA-Standalone Code 
@@ -16,3 +26,4 @@
 * https://community.developers.refinitiv.com/questions/96545/ric-search-tool-api.html
 * https://community.developers.refinitiv.com/questions/101641/help-with-news-api-for-python-more-details.html
 * https://community.developers.refinitiv.com/questions/99828/api-for-fetching-news-feed-data-of-companies.html
+
