@@ -1,7 +1,7 @@
 # WorkingStudent_ChairOfFinanceUniDUE
 
 ## Useful Links
-* Reuters Eikon Python API
+### Reuters Eikon Python API
 * https://developers.refinitiv.com/en/article-catalog/article/eikon-data-api-cheat-sheet
 * https://github.com/Refinitiv-API-Samples/Example.DataLibrary.Python/blob/main/Examples/2-Content/2.06-Search/EX-2.06.01-Search.ipynb
 * https://github.com/Refinitiv-API-Samples/Example.RDPLibrary.Python.ConvertSymbology
