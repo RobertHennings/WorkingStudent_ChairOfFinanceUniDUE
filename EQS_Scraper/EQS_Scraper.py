@@ -22,7 +22,7 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
     num_all_releases = int(initial_soup.find("p", {"class": "search-news__results"}).text.strip().split()[-2])
     print(f"Found {num_all_releases} news releases for isin: {isin}")
     # Edit the url to get the max number of results
-    url = f"https://www.eqs-news.com/de/search-results/?searchtype=news&searchword=DE0005494165&searchphrase=all&ordering=newest&pageLimit={num_all_releases}"
+    url = f"https://www.eqs-news.com/de/search-results/?searchtype=news&searchword={isin}&searchphrase=all&ordering=newest&pageLimit={num_all_releases}"
     soup = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
 
     # Scrape all the single links to the very own news pages that should be scraped
@@ -103,10 +103,10 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
                 f.close()
     print("Finished scraping all found releases")
 
-isin = "DE0005494165"
+isin = "DE0005194062"
 save_pdf = True
 save_txt = True
 path_save = glob.os.path.join("/Users/Robert_Hennings/Dokumente/Uni/MusterBewerbung/MeineArbeitgeber/SHK Uni DUE FIN/Arbeitsordner/EQS_News_Scraper/Article_PDF")
-num_to_scrape = 20
+num_to_scrape = 4
 scrape_eqs_releases(isin, save_pdf, save_txt, path_save, num_to_scrape)
 # Next step: also save metadata from the search list, like category or source and date of submission
