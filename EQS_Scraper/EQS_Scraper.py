@@ -65,7 +65,7 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
     # Loop through every scraped single news release link and safe respective date and type
     for link, r_date, r_type in zip(news_links[:num_to_scrape], release_dates[:num_to_scrape], release_type[:num_to_scrape]):
         # for debugging
-        link = "https://www.eqs-news.com/de/news/press-release/baywa-beteiligung-mrmrs-homes-raeumt-innovationspreis-ab-und-geht-deutschlandweit-in-die-flaeche-wohnhaus-konfigurator-revolutioniert-das-bauen-fuer-jedermann/1412925"
+        # link = "https://www.eqs-news.com/de/news/press-release/baywa-beteiligung-mrmrs-homes-raeumt-innovationspreis-ab-und-geht-deutschlandweit-in-die-flaeche-wohnhaus-konfigurator-revolutioniert-das-bauen-fuer-jedermann/1412925"
         print(f"Scraping news release: {link.split('/')[-2]}")
         # First determine if the article should be saved somewhere
         time = dt.datetime.now().strftime(f"%d_%m_%Y_%M_%S_{isin}")
