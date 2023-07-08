@@ -65,7 +65,7 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
     # Loop through every scraped single news release link and safe respective date and type
     for link, r_date, r_type in zip(news_links[:num_to_scrape], release_dates[:num_to_scrape], release_type[:num_to_scrape]):
         # for debugging
-        # link = "https://www.eqs-news.com/de/news/media/entscheidung-ueber-deutsches-hinweisgeberschutzgesetz-vertagt-weiter-keine-rechtssicherheit-fuer-whistleblower-eqs-group-bedauert-dass-das-gesetz-wegen-details-nicht-verabschiedet-wurde/1751575"
+        link = "https://www.eqs-news.com/de/news/press-release/baywa-beteiligung-mrmrs-homes-raeumt-innovationspreis-ab-und-geht-deutschlandweit-in-die-flaeche-wohnhaus-konfigurator-revolutioniert-das-bauen-fuer-jedermann/1412925"
         print(f"Scraping news release: {link.split('/')[-2]}")
         # First determine if the article should be saved somewhere
         time = dt.datetime.now().strftime(f"%d_%m_%Y_%M_%S_{isin}")
@@ -82,8 +82,11 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
         title_dict = {"Company_Name": None,
                       "Release_Title": None}
         release_title = soup_article.find('h1', {"class": "news-details__title pb-2"}).text.strip().split("\n")
-        title_dict["Company_Name"] = release_title[0]
-        title_dict["Release_Title"] = release_title[1]
+        try:
+            title_dict["Company_Name"] = release_title[0]
+            title_dict["Release_Title"] = release_title[1]
+        except:
+            print("Problems saving title elements in dict")
         # Next get the messsage body itself
         # Element 0 needs special treatment
         header_meta_data_dic = {"Company_Name": None,
@@ -93,10 +96,13 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
         header_meta_data = soup_article.find('div', {"class": "news-details__content"}).find_all("p")[0].text.strip().split("\n")
         # Drop all the empty list items
         header_meta_data = [item for item in header_meta_data if item != ""]
-        # Save the Company Name
-        header_meta_data_dic["Company_Name"] = header_meta_data[0]
-        # Save the Release_Title
-        header_meta_data_dic["Release_Title"] = header_meta_data[1]
+        try:
+            # Save the Company Name
+            header_meta_data_dic["Company_Name"] = header_meta_data[0]
+            # Save the Release_Title
+            header_meta_data_dic["Release_Title"] = header_meta_data[1]
+        except:
+            print("Problems saving Header Metadata in dict")
         # Find the Publication Date in the metadata
         header_meta_data_dic["Release_Date"] = [item for item in header_meta_data if "CET/CEST" in item]
         # element 1 is the title of the release
@@ -108,7 +114,7 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
                 # print(l_i.text)
                 disc_text.append(l_i.text)
         # Rest of the text
-        # the release body lasts until one of the following keywords 
+        # the release body lasts until one of the following keywords
         counter_contact = 0
         for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[1:]:
             if (("kontakt:") or ("contact:")) not in line.text.strip().lower():
@@ -162,6 +168,6 @@ isin = "DE0005194062"
 save_pdf = True
 save_txt = True
 path_save = glob.os.path.join("/Users/Robert_Hennings/Dokumente/Uni/MusterBewerbung/MeineArbeitgeber/SHK Uni DUE FIN/Arbeitsordner/EQS_News_Scraper/Article_PDF")
-num_to_scrape = 2
+num_to_scrape = 20
 scrape_eqs_releases(isin, save_pdf, save_txt, path_save, num_to_scrape)
 # Next step: also save metadata from the search list, like category or source and date of submission
