@@ -12,7 +12,10 @@
 
 ## ToDO
 * [ ] SSRN Scraper: Search in the single respective Conference Sub-SSRN Pages for more details like Submission format (i.e. LaTex, Word, PDF, etc) and also for the explicit Submission Deadline
-* [ ] SSRN Scraper: Check Automation Process and write it as VBA-Standalone Code 
+* [ ] SSRN Scraper: Check Automation Process and write it as VBA-Standalone Code
+* [ ] EQS Scraper: Change the output format to a pd.DataFrame for ease of use, also in the saved .txt files as structure
+* [ ] EQS Scraper: Change the filename of the saved files to ISIN_ReleaseDate_EQSNewsID for .txt and .pdf files
+* [ ] EQS Scraper: Sanity Check if all Release Sections are scraped properly
 
 ## Useful Links
 ### Reuters Eikon Python API
