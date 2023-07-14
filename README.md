@@ -32,3 +32,6 @@
 
 ### EQS News Article Dashboard
 * https://www.eqs-news.com/de/
+
+### SSRN Notifications and Announcements
+* https://www.ssrn.com/index.cfm/en/janda/professional-announcements/?annsNet=203
