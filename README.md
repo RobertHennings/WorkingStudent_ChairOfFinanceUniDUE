@@ -30,3 +30,5 @@
 * https://community.developers.refinitiv.com/questions/101641/help-with-news-api-for-python-more-details.html
 * https://community.developers.refinitiv.com/questions/99828/api-for-fetching-news-feed-data-of-companies.html
 
+### EQS News Article Dashboard
+* https://www.eqs-news.com/de/
