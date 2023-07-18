@@ -13,9 +13,21 @@
 ## ToDO
 * [ ] SSRN Scraper: Search in the single respective Conference Sub-SSRN Pages for more details like Submission format (i.e. LaTex, Word, PDF, etc) and also for the explicit Submission Deadline
 * [ ] SSRN Scraper: Check Automation Process and write it as VBA-Standalone Code
-* [ ] EQS Scraper: Change the output format to a pd.DataFrame for ease of use, also in the saved .txt files as structure
-* [ ] EQS Scraper: Change the filename of the saved files to ISIN_ReleaseDate_EQSNewsID for .txt and .pdf files
-* [ ] EQS Scraper: Sanity Check if all Release Sections are scraped properly
+* [X] EQS Scraper: Change the output format to a pd.DataFrame for ease of use, also in the saved .txt files as structure
+* [X] EQS Scraper: Change the filename of the saved files to ISIN_ReleaseDate_EQSNewsID for .txt and .pdf files
+* [X] EQS Scraper: Sanity Check if all Release Sections are scraped properly
+* [ ] EQS Scraper: Impement Release Type sensitive scraping to better cope with different url strcutures, types are the following:
+  * Corporate
+  * Vorabbekanntmachung
+  * Directors Dealings
+  * Hauptversammlung
+  * Ad-hoc
+  * Gesamtstimmrechte
+  * Media
+  * Stimmrechtsanteile
+  * Kapitalmarktinformationen
+  * Press Release
+  * UK Regulatory
 
 ## Useful Links
 ### Reuters Eikon Python API
