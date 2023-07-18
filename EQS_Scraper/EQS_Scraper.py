@@ -5,6 +5,21 @@ import datetime as dt
 import xlwings as xw
 import glob
 from pyhtml2pdf import converter
+import calendar
+
+# ####### Categories
+# Corporate
+# Vorabbekanntmachung
+# Directors Dealings
+# Hauptversammlung
+# Ad-hoc
+# Gesamtstimmrechte
+# Media
+# Stimmrechtsanteile
+# Kapitalmarktinformationen
+# Press Release == UK Regulatory
+# UK Regulatory
+
 
 def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: str, num_to_scrape: int):
     """Scrapes the News website EQS News for a given Company ISIN
@@ -33,6 +48,18 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
             raise TypeError(f"{var} not type int")
 
     # Do first scrape to see how many releases we have to edit the url and directly scrape all the releases at once
+    month_dict = {"Januar": 1,
+                  "Februar": 2,
+                  "März": 3,
+                  "April": 4,
+                  "Mai": 5,
+                  "Juni": 6,
+                  "Juli": 7,
+                  "August": 8,
+                  "September": 9,
+                  "Oktober": 10,
+                  "November": 11,
+                  "Dezember": 12}
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:100.0) Gecko/20100101 Firefox/100.0"
     }
@@ -59,115 +86,199 @@ def scrape_eqs_releases(isin: str, save_pdf: bool, save_txt: bool, path_save: st
     release_type = []
     for r_type in soup.find_all("div", {"class": "col-auto search-news-grid__type"}):
         release_type.append(r_type.text)
-    
+
     print(f"Scraping {len(news_links)} links for news releases")
     print("Scraping every single news release...")
     # Loop through every scraped single news release link and safe respective date and type
-    for link, r_date, r_type in zip(news_links[:num_to_scrape], release_dates[:num_to_scrape], release_type[:num_to_scrape]):
-        # for debugging
-        # link = "https://www.eqs-news.com/de/news/press-release/baywa-beteiligung-mrmrs-homes-raeumt-innovationspreis-ab-und-geht-deutschlandweit-in-die-flaeche-wohnhaus-konfigurator-revolutioniert-das-bauen-fuer-jedermann/1412925"
-        print(f"Scraping news release: {link.split('/')[-2]}")
-        # First determine if the article should be saved somewhere
-        time = dt.datetime.now().strftime(f"%d_%m_%Y_%M_%S_{isin}")
-        if save_pdf:
-            file_name = time + ".pdf"
-            print(f"Saving file: {file_name} in path: {path_save}")
+    # make the scraping procedure case sensitive, depending on the type of the release
+    for link, r_date, r_type in zip(news_links[0:num_to_scrape], release_dates[0:num_to_scrape], release_type[0:num_to_scrape]):
+        try:
+            time = dt.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+            # for debugging
+            # link = "https://www.eqs-news.com/de/news/corporate/allianz-se-allianz-steigert-operatives-ergebnis-um-fast-ein-viertel-auf-37-milliarden-euro/1816595"
+            # r_date = '12 Mai 2023'
+            # r_type = 'Corporate'
+            print(f"Scraping news release: {link.split('/')[-2]}")
+            # Next we need to scrape every single webpage from the news search
+            soup_article = BeautifulSoup(requests.get(link, headers=headers).content, "html.parser")
+            # Get the title element
+            title_dict = {"Company_Name": None,
+                        "Release_Title": None}
             try:
-                converter.convert(link, path_save + "//" + file_name)
+                release_title = soup_article.find('h1', {"class": "news-details__title pb-2"}).text.strip().split("\n")
             except:
-                print(f"Problems solving pdf file for release: {link.split('/')[-2]}")
-        # Next we need to scrape every single webpage from the news search
-        soup_article = BeautifulSoup(requests.get(link, headers=headers).content, "html.parser")
-        # Get the title element
-        title_dict = {"Company_Name": None,
-                      "Release_Title": None}
-        release_title = soup_article.find('h1', {"class": "news-details__title pb-2"}).text.strip().split("\n")
-        try:
-            title_dict["Company_Name"] = release_title[0]
-            title_dict["Release_Title"] = release_title[1]
+                print(f"Problems getting release title at: {link}")
+            try:
+                title_dict["Company_Name"] = release_title[0]
+                title_dict["Release_Title"] = release_title[1]
+            except:
+                print(f"Problems saving title elements in dict at: {link}")
+            # Next get the messsage body itself
+            # Element 0 needs special treatment
+            header_meta_data_dict = {"Company_Name": None,
+                                    "Release_Title": None,
+                                    "Release_Date": None}
+            try:
+                # in some cases we have a dedicated news_top section we can parse but not for every release type
+                if r_type in ["Vorabbekanntmachung",
+                            "Hauptversammlung",
+                            "Ad-hoc",
+                            "Media",
+                            "Stimmrechtsanteile",
+                            "Kapitalmarktinformationen",
+                            "Press Release",
+                            "UK Regulatory"]:
+                    release_header = []
+                    for line in soup_article.find('p', {"class": "news_top"}):
+                            release_header.append(line.text.strip().replace("\n", ""))
+                else:
+                    header_meta_data = soup_article.find('div', {"class": "news-details__content"}).find_all("p")[0].text.strip().split("\n")
+                # Drop all the empty list items
+                header_meta_data = [item for item in header_meta_data if item != ""]
+            except:
+                print(f"Problems with Header Meta Data at: {link}")
+
+            try:
+                # Save the Company Name
+                header_meta_data_dict["Company_Name"] = header_meta_data[0]
+                # Save the Release_Title
+                header_meta_data_dict["Release_Title"] = header_meta_data[1]
+            except:
+                print(f"Problems saving Header Metadata in dict at: {link}")
+            
+            # Find the Publication Date in the metadata
+            try:
+                header_meta_data_dict["Release_Date"] = [item for item in header_meta_data if "CET/CEST" in item]
+            except:
+                print(f"Problems Release Date at: {link}")
+            # element 1 is the title of the release
+            try:
+                release_body_title = soup_article.find('div', {"class": "news-details__content"}).find_all("p")[1].text.strip()
+            except:
+                print(f"Problems Release Body Title at: {link}")
+            # not always existend in the body of the website, the short description slot
+            disc_text = []
+            if soup_article.find_all("ul", {"type": "disc"}):
+                for l_i in soup_article.find_all("ul", {"type": "disc"}):
+                    # print(l_i.text)
+                    disc_text.append(l_i.text)
+            # Rest of the text
+            # the release body lasts until one of the following keywords
+            counter_contact = 0
+            for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[1:]:
+                if (("kontakt:") or ("contact:") or ("kontakte") or (" kontakt:")) not in line.text.strip().lower():
+                    counter_contact +=1
+                else:
+                    counter_contact +=1
+                    break
+            
+            release_text = []
+            try:
+                if r_type == "Vorabbekanntmachung":
+                    for line in soup_article.find('div', {"class": "break-word news_main"}):
+                                    release_text.append(line.text.strip().replace("\n", " "))
+                elif r_type in ["Hauptversammlung", "Ad-hoc", "Press Release", "UK Regulatory"]:
+                        # Next get the main release body
+                        # Add here an option that searches instead for the p elements for the span elements
+                        release_text = []
+                        for line in soup_article.find('div', {"class": "break-word news_main"}).find_all("p"):
+                                        release_text.append(line.text.strip().replace("\n", " "))
+                elif r_type == "Media":
+                    release_text = []
+                    for line in soup_article.find('div', {"class": "break-word news_main"}).find_all("span"):
+                                    release_text.append(line.text.strip().replace("\n", ""))
+                else:
+                    for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[2:counter_contact]:
+                        release_text.append(line.text.strip())
+                    if release_text == []:
+                        for line in soup_article.find('div', {"class": "news-details__content"}).find_all("pre"):
+                            release_text.append(line.text.strip())
+                # drop all the empty elements in the list
+                release_text = [item for item in release_text if item != ""]
+            except:
+                print(f"Problems Release Text at: {link}")
+            # next get all the text content that is below the release contact details
+            release_text_after_contact = []
+            try:
+                for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[counter_contact:]:
+                    release_text_after_contact.append(line.text.strip())
+            except:
+                print(f"Problems Release Text after contacts at: {link}")
+            # also get the Meta data at the very end of the webpage
+            # watch out: is not always available
+            if soup_article.find('table', {"class": "news_footer_layout"}):
+                metadata_webpage_bottom = []
+                for line in soup_article.find('table', {"class": "news_footer_layout"}).find_all("tr"):
+                    # print(line.text)
+                    metadata_webpage_bottom.append(line.text.strip().replace("\n", " "))
+            # Save the metadata in a dict
+            metadata_webpage_bottom_dict = {}
+            for item in metadata_webpage_bottom:
+                if ":" in item:
+                    key, value = item.split(': ')
+                    metadata_webpage_bottom_dict[key] = value
+            # Save evrything in a pd.DataFrame for easy access
+            trans_date = pd.to_datetime(r_date.split(" ")[0] + " " + str(month_dict[r_date.split(" ")[1]]) + " " + r_date.split(" ")[2], dayfirst=True)
+            release_df = pd.DataFrame(index=range(1))
+            release_df["r_link"] = link
+            release_df["r_date"] = trans_date
+            release_df["r_type"] = r_type
+            release_df["r_scraped"] = time
+            release_df["r_comp_name"] = title_dict["Company_Name"]
+            release_df["r_title"] = title_dict["Release_Title"]
+            release_df["r_body_title"] = release_body_title
+            release_df["r_body_disc"] = disc_text if disc_text != [] else ""
+            release_df["r_text"] = "".join(release_text) if release_text != [] else ""
+            release_df["r_text_after_contact"] = "".join(release_text_after_contact)
+            for it in metadata_webpage_bottom_dict.items():
+                release_df[it[0]] = it[1]
+            # Finally save the whole scraped content in a .txt file as well
+            if save_txt:
+                file_name = isin + "_" + trans_date.strftime("%d-%m-%Y") + ".csv"
+                print(f"Saving file: {file_name} in path: {path_save}")
+                release_df.to_csv(path_save + "//" + file_name)
+                # with open(path_save + "//" + file_name, "w") as f:
+                #     f.write("Published:\n" + r_date)
+                #     f.write("\nRelease_Type:\n" + r_type)
+                #     f.write("\nRelease_Title:\n" + "\n".join(release_title)) # Save title
+                #     f.write("\nMeta_Data:\n" + "\n".join(header_meta_data)) # Save the meta data from the header
+                #     f.write("\nRelease_Body_Title:\n" + "".join(release_body_title)) # save the title of the actual textual body
+                #     if disc_text:
+                #         f.write("\nDescription_Bullets:\n" + "\n".join(disc_text)) # if exists save the brief bullet points from short description
+                #     f.write("\nRelease_Text:\n" + "\n".join(release_text))
+                #     f.write("\nRelease_Contact:\n" + "\n".join(release_text_after_contact))
+                #     f.write("\nMetadata_WebpageBottom:\n" + "\n".join(metadata_webpage_bottom))
+                #     f.close()
+                # if specified also save a .pdf file of the article
+            if save_pdf:
+                file_name = isin + "_" + trans_date.strftime("%d-%m-%Y") + ".pdf"
+                print(f"Saving file: {file_name} in path: {path_save}")
+                try:
+                    converter.convert(link, path_save + "//" + file_name)
+                except:
+                    print(f"Problems solving pdf file for release: {link.split('/')[-2]}")
         except:
-            print("Problems saving title elements in dict")
-        # Next get the messsage body itself
-        # Element 0 needs special treatment
-        header_meta_data_dic = {"Company_Name": None,
-                                "Release_Title": None,
-                                "Release_Date": None}
-        
-        header_meta_data = soup_article.find('div', {"class": "news-details__content"}).find_all("p")[0].text.strip().split("\n")
-        # Drop all the empty list items
-        header_meta_data = [item for item in header_meta_data if item != ""]
-        try:
-            # Save the Company Name
-            header_meta_data_dic["Company_Name"] = header_meta_data[0]
-            # Save the Release_Title
-            header_meta_data_dic["Release_Title"] = header_meta_data[1]
-        except:
-            print("Problems saving Header Metadata in dict")
-        # Find the Publication Date in the metadata
-        header_meta_data_dic["Release_Date"] = [item for item in header_meta_data if "CET/CEST" in item]
-        # element 1 is the title of the release
-        release_body_title = soup_article.find('div', {"class": "news-details__content"}).find_all("p")[1].text.strip()
-        # not always existend in the body of the website, the short description slot
-        disc_text = []
-        if soup_article.find_all("ul", {"type": "disc"}):
-            for l_i in soup_article.find_all("ul", {"type": "disc"}):
-                # print(l_i.text)
-                disc_text.append(l_i.text)
-        # Rest of the text
-        # the release body lasts until one of the following keywords
-        counter_contact = 0
-        for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[1:]:
-            if (("kontakt:") or ("contact:")) not in line.text.strip().lower():
-                counter_contact +=1
-            else:
-                counter_contact +=1
-                break
-
-        release_text = []
-        for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[2:counter_contact]:
-            release_text.append(line.text.strip())
-
-        # next get all the text content that is below the release contact details
-        release_text_after_contact = []
-        for line in soup_article.find('div', {"class": "news-details__content"}).find_all("p")[counter_contact:]:
-            release_text_after_contact.append(line.text.strip())
-
-        # also get the Meta data at the very end of the webpage
-        # watch out: is not always available
-        if soup_article.find('table', {"class": "news_footer_layout"}):
-            metadata_webpage_bottom = []
-            for line in soup_article.find('table', {"class": "news_footer_layout"}).find_all("tr"):
-                # print(line.text)
-                metadata_webpage_bottom.append(line.text.strip().replace("\n", " "))
-        # Save the metadata in a dict
-        metadata_webpage_bottom_dict = {}
-        for item in metadata_webpage_bottom:
-            if ":" in item:
-                key, value = item.split(': ')
-                metadata_webpage_bottom_dict[key] = value
-
-        # Finally save the whole scraped content in a .txt file as well
-        if save_txt:
-            file_name = time + ".txt"
-            print(f"Saving file: {file_name} in path: {path_save}")
-            with open(path_save + "//" + file_name, "w") as f:
-                f.write("Published:\n" + r_date)
-                f.write("\nRelease_Type:\n" + r_type)
-                f.write("\nRelease_Title:\n" + "\n".join(release_title)) # Save title
-                f.write("\nMeta_Data:\n" + "\n".join(header_meta_data)) # Save the meta data from the header
-                f.write("\nRelease_Body_Title:\n" + "".join(release_body_title)) # save the title of the actual textual body
-                if disc_text:
-                    f.write("\nDescription_Bullets:\n" + "\n".join(disc_text)) # if exists save the brief bullet points from short description
-                f.write("\nRelease_Text:\n" + "\n".join(release_text))
-                f.write("\nRelease_Contact:\n" + "\n".join(release_text_after_contact))
-                f.write("\nMetadata_WebpageBottom:\n" + "\n".join(metadata_webpage_bottom))
-                f.close()
+            print("Error on a higher level")
     print("Finished scraping all found releases")
 
-isin = "DE0005194062"
+# Check for isins
+# DE0007164600
+# DE0007236101
+# DE000BAY0017
+# DE0008404005
+# DE000BASF111
+# DE0005557508
+# DE0007100000
+# DE0007664005
+
+isin = "DE0007236101"
 save_pdf = True
 save_txt = True
-path_save = glob.os.path.join("/Users/Robert_Hennings/Dokumente/Uni/MusterBewerbung/MeineArbeitgeber/SHK Uni DUE FIN/Arbeitsordner/EQS_News_Scraper/Article_PDF")
+path_save = glob.os.path.join("/Users/Robert_Hennings/Dokumente/Uni/MusterBewerbung/MeineArbeitgeber/SHK Uni DUE FIN/Arbeitsordner/EQS_News_Scraper")
 num_to_scrape = 20
 scrape_eqs_releases(isin, save_pdf, save_txt, path_save, num_to_scrape)
-# Next step: also save metadata from the search list, like category or source and date of submission
+
+for isin_ in ["DE0007164600", "DE0007236101", "DE000BAY0017", "DE0008404005", "DE000BASF111", "DE0005557508", "DE0007100000", "DE0007664005"]:
+    path_save_new = path_save + "//" + isin_
+    glob.os.mkdir(path_save_new)
+    scrape_eqs_releases(isin_, save_pdf, save_txt, path_save_new, num_to_scrape)
