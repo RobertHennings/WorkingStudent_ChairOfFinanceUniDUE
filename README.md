@@ -20,14 +20,14 @@
   * [X] Corporate
   * [X] Vorabbekanntmachung
   * [X] Directors Dealings
-  * [ ] Hauptversammlung
+  * [X] Hauptversammlung
   * [X] Ad-hoc
-  * [ ] Gesamtstimmrechte
+  * [X] Gesamtstimmrechte
   * [X] Media
   * [X] Stimmrechtsanteile
   * [X] Kapitalmarktinformationen
-  * [ ] Press Release
-  * [ ] UK Regulatory
+  * [X] Press Release
+  * [X] UK Regulatory
 
 ## Useful Links
 ### Reuters Eikon Python API
