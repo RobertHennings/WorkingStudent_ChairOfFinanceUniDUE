@@ -17,17 +17,17 @@
 * [X] EQS Scraper: Change the filename of the saved files to ISIN_ReleaseDate_EQSNewsID for .txt and .pdf files
 * [X] EQS Scraper: Sanity Check if all Release Sections are scraped properly
 * [ ] EQS Scraper: Impement Release Type sensitive scraping to better cope with different url strcutures, types are the following:
-  * Corporate
-  * Vorabbekanntmachung
-  * Directors Dealings
-  * Hauptversammlung
-  * Ad-hoc
-  * Gesamtstimmrechte
-  * Media
-  * Stimmrechtsanteile
-  * Kapitalmarktinformationen
-  * Press Release
-  * UK Regulatory
+  * [X] Corporate
+  * [X] Vorabbekanntmachung
+  * [X] Directors Dealings
+  * [ ] Hauptversammlung
+  * [X] Ad-hoc
+  * [ ] Gesamtstimmrechte
+  * [X] Media
+  * [X] Stimmrechtsanteile
+  * [X] Kapitalmarktinformationen
+  * [ ] Press Release
+  * [ ] UK Regulatory
 
 ## Useful Links
 ### Reuters Eikon Python API
