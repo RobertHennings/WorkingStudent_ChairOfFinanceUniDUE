@@ -16,7 +16,7 @@
 * [X] EQS Scraper: Change the output format to a pd.DataFrame for ease of use, also in the saved .txt files as structure
 * [X] EQS Scraper: Change the filename of the saved files to ISIN_ReleaseDate_EQSNewsID for .txt and .pdf files
 * [X] EQS Scraper: Sanity Check if all Release Sections are scraped properly
-* [ ] EQS Scraper: Impement Release Type sensitive scraping to better cope with different url strcutures, types are the following:
+* [X] EQS Scraper: Impement Release Type sensitive scraping to better cope with different url strcutures, types are the following:
   * [X] Corporate
   * [X] Vorabbekanntmachung
   * [X] Directors Dealings
