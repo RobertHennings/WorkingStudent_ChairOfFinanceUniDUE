@@ -1,12 +1,12 @@
 # WorkingStudent_ChairOfFinanceUniDUE
 
 <p align="center">
-  <img src="https://github.com/RobertHennings/WorkingStudent_ChairOfFinanceUniDUE/blob/main/Pictures/HEMF_Logo.png" 
+  <img src="https://raw.githubusercontent.com/RobertHennings/WorkingStudent_ChairOfFinanceUniDUE/refs/heads/main/Pictures/HEMF_Logo.png" 
        width="400"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/RobertHennings/WorkingStudent_ChairOfFinanceUniDUE/blob/main/Pictures/Chair_Logo.png" 
+  <img src="https://raw.githubusercontent.com/RobertHennings/WorkingStudent_ChairOfFinanceUniDUE/refs/heads/main/Pictures/Chair_Logo.png" 
        width="400"/>
 </p>
 
@@ -28,6 +28,12 @@
   * [X] Kapitalmarktinformationen
   * [X] Press Release
   * [X] UK Regulatory
+
+## Documentation EQS Scraper
+### DISCLAIMER: This Scraper is not associated with the EQS Group in any kind - it is a pure personal - nonprofit/non commercial open source software project
+The main purpose of this simple Webscraper is to source the single open market publications that can be found [here](https://www.eqs-news.com/de/) that primarily stem from small to mid cap sized comapnies, listed on the german stock exchange.
+Since the publication of such information is quite scarce and the arbitrage opportunities especially in these market segments due to information asymmetries not to ignore, this scraper should help gather them.
+
 
 ## Useful Links
 ### Reuters Eikon Python API
